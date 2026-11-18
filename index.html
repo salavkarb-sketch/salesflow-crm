@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SalesFlow CRM Portal</title>
+<style>
+:root{--navy:#142b4a;--blue:#2563eb;--bg:#f3f6fb;--line:#dce3ed}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
+header{background:var(--navy);color:white;padding:22px 28px}
+header h1{margin:0 0 6px;font-size:25px}
+header p{margin:0;color:#cbd5e1}
+nav{display:flex;flex-wrap:wrap;gap:8px;padding:14px 22px;background:white;border-bottom:1px solid var(--line)}
+nav button,.btn{border:0;border-radius:7px;padding:10px 15px;cursor:pointer;font-weight:600}
+nav button{background:#eaf0f8;color:#243b5a}
+nav button.active,.primary{background:var(--blue);color:white}
+main{padding:22px;max-width:1500px;margin:auto}
+.panel{display:none;background:white;padding:22px;border:1px solid var(--line);border-radius:12px;margin-bottom:20px}
+.panel.active{display:block}
+h2{margin-top:0;color:var(--navy)}
+h3{color:var(--navy);margin-top:24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:13px}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:6px;background:white;font:inherit}
+textarea{min-height:75px;resize:vertical}
+.field{margin-bottom:10px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.btn{background:#e7edf5;color:#243b5a}
+.danger{background:#fee2e2;color:#991b1b}
+.tablewrap{overflow:auto;margin-top:18px}
+table{border-collapse:collapse;width:100%;min-width:850px;font-size:13px}
+th,td{border:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}
+th{background:#edf3fa;color:#183452}
+.small{font-size:12px;color:#64748b}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.stat{padding:18px;background:#f1f6ff;border-radius:9px}
+.stat strong{display:block;font-size:25px;color:var(--blue);margin-top:7px}
+.status{font-weight:bold;color:#087443}
+footer{text-align:center;color:#64748b;padding:20px}
+@media(max-width:600px){main{padding:12px}.panel{padding:14px}header{padding:18px}}
+</style>
+</head>
+<body>
+<header>
+<h1>SalesFlow CRM</h1>
+<p>Sales Visit • Enquiry Tracking • Follow-up Management • Order Booking</p>
+</header>
+
+<nav>
+<button class="active" onclick="showTab('dashboard',this)">Dashboard</button>
+<button onclick="showTab('visits',this)">Sales Visit Entry</button>
+<button onclick="showTab('enquiries',this)">Enquiry Tracking</button>
+<button onclick="showTab('followups',this)">Follow-up Management</button>
+<button onclick="showTab('orders',this)">Order Booking</button>
+</nav>
+
+<main>
+
+<section id="dashboard" class="panel active">
+<h2>Dashboard</h2>
+<div class="stats">
+<div class="stat">Total Sales Visits<strong id="visitCount">0</strong></div>
+<div class="stat">Total Enquiries<strong id="enquiryCount">0</strong></div>
+<div class="stat">Follow-ups<strong id="followCount">0</strong></div>
+<div class="stat">Orders Booked<strong id="orderCount">0</strong></div>
+</div>
+<p class="small">Records are saved automatically in this browser.</p>
+</section>
+
+<section id="visits" class="panel">
+<h2>Module 1 – Sales Visit Entry</h2>
+<form id="visitForm">
+<input type="hidden" id="visitEdit">
+<h3>Customer Details</h3>
+<div class="grid">
+<div class="field"><label>Visit Date</label><input type="date" id="visitDate" required></div>
+<div class="field"><label>Sales Engineer Name</label><input id="engineer" required></div>
+<div class="field"><label>Customer Name</label><input id="customer" required></div>
+<div class="field"><label>Company Name</label><input id="company"></div>
+<div class="field"><label>Contact Number</label><input id="contact"></div>
+<div class="field"><label>Email ID</label><input type="email" id="email"></div>
+<div class="field"><label>Location / City</label><input id="city"></div>
+<div class="field"><label>State</label><input id="state"></div>
+<div class="field"><label>Industry Type</label><input id="industry"></div>
+</div>
+
+<h3>Meeting Details</h3>
+<div class="grid">
+<div class="field"><label>Visit Purpose</label>
+<select id="purpose">
+<option>General Introduction</option><option>Product Presentation</option>
+<option>Enquiry Discussion</option><option>Follow-up Visit</option>
+<option>Complaint Support</option>
+</select></div>
+<div class="field"><label>Presentation Conducted</label>
+<select id="presentation"><option>Yes</option><option>No</option></select></div>
+<div class="field"><label>Products Discussed</label>
+<select id="products" multiple size="6">
+<option>CEMS</option><option>AAQMS</option><option>Dust Monitor</option>
+<option>Opacity Monitor</option><option>WQMS</option><option>Gas Detection System</option>
+</select><span class="small">Use Ctrl or Command to select multiple products.</span></div>
+<div class="field"><label>Customer Interest Level</label>
+<select id="interest"><option>High</option><option>Medium</option><option>Low</option></select></div>
+<div class="field"><label>Next Follow-up Date</label><input type="date" id="nextVisitFollow"></div>
+<div class="field"><label>Enquiry Generation</label>
+<select id="hasEnquiry"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+</div>
+<div class="field"><label>Meeting Remarks</label><textarea id="remarks"></textarea></div>
+<div class="actions">
+<button class="btn primary" type="submit">Save Sales Visit</button>
+<button class="btn" type="reset" onclick="clearEdit('visitEdit')">Clear Form</button>
+<button class="btn" type="button" onclick="exportCSV('visits')">Export Sales Visits – Excel</button>
+</div>
+</form>
+<div class="tablewrap"><table id="visitTable"></table></div>
+</section>
+
+<section id="enquiries" class="panel">
+<h2>Module 2 – Enquiry Tracking</h2>
+<p class="small">Enquiries are automatically created from Sales Visit Entry when Enquiry Generation is Yes. You can edit quotation details below.</p>
+<form id="enquiryForm">
+<input type="hidden" id="enquiryEdit">
+<div class="grid">
+<div class="field"><label>Enquiry Received Date</label><input type="date" id="enqDate" required></div>
+<div class="field"><label>Customer Name</label><input id="enqCustomer" required></div>
+<div class="field"><label>Customer Contact No.</label><input id="enqContact"></div>
+<div class="field"><label>Customer E-mail ID</label><input type="email" id="enqEmail"></div>
+<div class="field"><label>Email Reference</label><input id="emailReference"></div>
+<div class="field"><label>Quote No.</label><input id="quoteNo"></div>
+<div class="field"><label>Quote Submission Date</label><input type="date" id="quoteDate" onchange="updateEnquiryFollowDate()"></div>
+<div class="field"><label>Quote Value</label><input type="number" step="0.01" id="quoteValue"></div>
+<div class="field"><label>Follow-up Date (auto-calculated)</label><input type="date" id="enqFollowDate" readonly></div>
+</div>
+<div class="actions">
+<button class="btn primary" type="submit">Save / Update Enquiry</button>
+<button class="btn" type="reset" onclick="clearEdit('enquiryEdit')">Clear Form</button>
+<button class="btn" type="button" onclick="exportCSV('enquiries')">Export Enquiries – Excel</button>
+</div>
+</form>
+<div class="tablewrap"><table id="enquiryTable"></table></div>
+</section>
+
+<section id="followups" class="panel">
+<h2>Module 3 – Follow-up Management</h2>
+<p class="small">Customer and quotation details are synchronized from Enquiry Tracking. Follow-up date is two working days after quote submission.</p>
+<form id="followForm">
+<input type="hidden" id="followEdit">
+<div class="grid">
+<div class="field"><label>Follow-up Date</label><input type="date" id="fDate" readonly></div>
+<div class="field"><label>Enquiry Received Date</label><input type="date" id="fEnqDate" readonly></div>
+<div class="field"><label>Customer Name</label><input id="fCustomer" readonly></div>
+<div class="field"><label>Customer Contact No.</label><input id="fContact" readonly></div>
+<div class="field"><label>Customer E-mail ID</label><input id="fEmail" readonly></div>
+<div class="field"><label>Email Reference</label><input id="fReference" readonly></div>
+<div class="field"><label>Quote No.</label><input id="fQuote" readonly></div>
+<div class="field"><label>Quote Submission Date</label><input type="date" id="fQuoteDate" readonly></div>
+<div class="field"><label>Quote Value</label><input id="fQuoteValue" readonly></div>
+<div class="field"><label>Follow-up Status</label><select id="fStatus"><option>Pending</option><option>Completed</option><option>Rescheduled</option></select></div>
+<div class="field"><label>Response / Outcome</label><input id="fResponse"></div>
+<div class="field"><label>Next Action Date</label><input type="date" id="fNextAction"></div>
+</div>
+<div class="field"><label>Reasoning</label><textarea id="fReason"></textarea></div>
+<div class="actions">
+<button class="btn primary" type="submit">Save Follow-up Update</button>
+<button class="btn" type="button" onclick="exportCSV('followups')">Export Follow-ups – Excel</button>
+</div>
+</form>
+<div class="tablewrap"><table id="followTable"></table></div>
+</section>
+
+<section id="orders" class="panel">
+<h2>Module 4 – Order Booking</h2>
+<form id="orderForm">
+<input type="hidden" id="orderEdit">
+<div class="grid">
+<div class="field"><label>Customer Name</label><input id="oCustomer" required></div>
+<div class="field"><label>Company Name</label><input id="oCompany"></div>
+<div class="field"><label>PO Date</label><input type="date" id="poDate"></div>
+<div class="field"><label>PO Received Date</label><input type="date" id="poReceived"></div>
+<div class="field"><label>PO Value</label><input type="number" step="0.01" id="poValue"></div>
+<div class="field"><label>Quote Value</label><input type="number" step="0.01" id="oQuoteValue"></div>
+<div class="field"><label>SO No.</label><input id="soNo"></div>
+<div class="field"><label>Delivery Date Schedule</label><input type="date" id="deliveryDate"></div>
+</div>
+<div class="field"><label>PO Description – Technical</label><textarea id="poDescription"></textarea></div>
+<div class="actions">
+<button class="btn primary" type="submit">Save Order</button>
+<button class="btn" type="reset" onclick="clearEdit('orderEdit')">Clear Form</button>
+<button class="btn" type="button" onclick="exportCSV('orders')">Export Orders – Excel</button>
+</div>
+</form>
+<div class="tablewrap"><table id="orderTable"></table></div>
+</section>
+
+</main>
+<footer>SalesFlow CRM • Standalone editable portal</footer>
+
+<script>
+const KEY='salesflowCRM_v2';
+let db=JSON.parse(localStorage.getItem(KEY)||'{"visits":[],"enquiries":[],"followups":[],"orders":[]}');
+const $=id=>document.getElementById(id);
+const val=id=>$(id).value;
+const set=(id,v)=>$(id).value=v??'';
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function saveDB(){localStorage.setItem(KEY,JSON.stringify(db));renderAll();}
+function showTab(id,button){
+ document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+ $(id).classList.add('active');
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+ button.classList.add('active');
+}
+function addBusinessDays(date,days){
+ if(!date)return '';
+ let d=new Date(date+'T12:00:00');
+ let count=0;
+ while(count<days){d.setDate(d.getDate()+1);if(d.getDay()!==0&&d.getDay()!==6)count++;}
+ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function updateEnquiryFollowDate(){set('enqFollowDate',addBusinessDays(val('quoteDate'),2));}
+function syncFollowup(e){
+ let f=db.followups.find(x=>x.enquiryId===e.id);
+ const fields={enquiryId:e.id,followDate:e.followDate,enqDate:e.enqDate,customer:e.customer,contact:e.contact,email:e.email,reference:e.reference,quoteNo:e.quoteNo,quoteDate:e.quoteDate,quoteValue:e.quoteValue};
+ if(!f){db.followups.push({id:uid(),...fields,status:'Pending',response:'',nextAction:'',reason:''});}
+ else Object.assign(f,fields);
+}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function table(id,headers,rows,kind){
+ let t=$(id);
+ t.innerHTML='<thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'<th>Actions</th></tr></thead><tbody>'+
+ rows.map(r=>'<tr>'+r.cells.map(c=>'<td>'+esc(c)+'</td>').join('')+
+ '<td><button class="btn" onclick="editRecord(\''+kind+'\',\''+r.id+'\')">Edit</button> <button class="btn danger" onclick="deleteRecord(\''+kind+'\',\''+r.id+'\')">Delete</button></td></tr>').join('')+'</tbody>';
+}
+function renderAll(){
+ $('visitCount').textContent=db.visits.length;
+ $('enquiryCount').textContent=db.enquiries.length;
+ $('followCount').textContent=db.followups.length;
+ $('orderCount').textContent=db.orders.length;
+ table('visitTable',['Visit Date','Engineer','Customer','Company','Contact','Email','City','State','Industry','Purpose','Presentation','Products','Interest','Next Visit Follow-up','Enquiry Generation','Remarks'],
+ db.visits.map(x=>({id:x.id,cells:[x.date,x.engineer,x.customer,x.company,x.contact,x.email,x.city,x.state,x.industry,x.purpose,x.presentation,(x.products||[]).join(', '),x.interest,x.nextVisitFollow,x.hasEnquiry,x.remarks]})),'visits');
+ table('enquiryTable',['Enquiry Received Date','Customer Name','Customer Contact No.','Customer E-mail ID','Email Reference','Quote No.','Quote Submission Date','Quote Value','Follow-up Date'],
+ db.enquiries.map(x=>({id:x.id,cells:[x.enqDate,x.customer,x.contact,x.email,x.reference,x.quoteNo,x.quoteDate,x.quoteValue,x.followDate]})),'enquiries');
+ table('followTable',['Follow-up Date','Enquiry Received Date','Customer','Contact','Email','Email Reference','Quote No.','Quote Submission Date','Quote Value','Status','Response','Next Action Date','Reasoning'],
+ db.followups.map(x=>({id:x.id,cells:[x.followDate,x.enqDate,x.customer,x.contact,x.email,x.reference,x.quoteNo,x.quoteDate,x.quoteValue,x.status,x.response,x.nextAction,x.reason]})),'followups');
+ table('orderTable',['Customer','Company','PO Date','PO Received Date','PO Value','Quote Value','SO No.','Delivery Date Schedule','PO Technical Description'],
+ db.orders.map(x=>({id:x.id,cells:[x.customer,x.company,x.poDate,x.poReceived,x.poValue,x.quoteValue,x.soNo,x.deliveryDate,x.description]})),'orders');
+}
+$('visitForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ let id=val('visitEdit')||uid();
+ let old=db.visits.find(x=>x.id===id);
+ let record={id,date:val('visitDate'),engineer:val('engineer'),customer:val('customer'),company:val('company'),contact:val('contact'),email:val('email'),city:val('city'),state:val('state'),industry:val('industry'),purpose:val('purpose'),presentation:val('presentation'),products:Array.from($('products').selectedOptions).map(o=>o.value),interest:val('interest'),nextVisitFollow:val('nextVisitFollow'),hasEnquiry:val('hasEnquiry'),remarks:val('remarks')};
+ if(old)Object.assign(old,record);else db.visits.push(record);
+ if(record.hasEnquiry==='Yes'){
+  let enq=db.enquiries.find(x=>x.visitId===id);
+  if(!enq){enq={id:uid(),visitId:id,enqDate:record.date,customer:record.customer,contact:record.contact,email:record.email,reference:'',quoteNo:'',quoteDate:'',quoteValue:'',followDate:''};db.enquiries.push(enq);}
+  else Object.assign(enq,{enqDate:record.date,customer:record.customer,contact:record.contact,email:record.email});
+  syncFollowup(enq);
+ }else{
+  db.enquiries=db.enquiries.filter(x=>x.visitId!==id);
+  db.followups=db.followups.filter(x=>db.enquiries.some(e=>e.id===x.enquiryId));
+ }
+ saveDB();e.target.reset();set('visitEdit','');alert('Sales visit saved.');
+});
+$('enquiryForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ let id=val('enquiryEdit');
+ let x=db.enquiries.find(a=>a.id===id);
+ if(!x){alert('Please edit an enquiry created from Sales Visit Entry.');return;}
+ Object.assign(x,{enqDate:val('enqDate'),customer:val('enqCustomer'),contact:val('enqContact'),email:val('enqEmail'),reference:val('emailReference'),quoteNo:val('quoteNo'),quoteDate:val('quoteDate'),quoteValue:val('quoteValue'),followDate:addBusinessDays(val('quoteDate'),2)});
+ syncFollowup(x);saveDB();e.target.reset();set('enquiryEdit','');alert('Enquiry and follow-up details updated.');
+});
+$('followForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ let x=db.followups.find(a=>a.id===val('followEdit'));
+ if(!x){alert('Select Edit on a follow-up record to update it.');return;}
+ Object.assign(x,{status:val('fStatus'),response:val('fResponse'),nextAction:val('fNextAction'),reason:val('fReason')});
+ saveDB();e.target.reset();set('followEdit','');alert('Follow-up update saved.');
+});
+$('orderForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ let id=val('orderEdit'),x=db.orders.find(a=>a.id===id);
+ let record={id:id||uid(),customer:val('oCustomer'),company:val('oCompany'),poDate:val('poDate'),poReceived:val('poReceived'),poValue:val('poValue'),quoteValue:val('oQuoteValue'),soNo:val('soNo'),deliveryDate:val('deliveryDate'),description:val('poDescription')};
+ if(x)Object.assign(x,record);else db.orders.push(record);
+ saveDB();e.target.reset();set('orderEdit','');alert('Order saved.');
+});
+function editRecord(kind,id){
+ let x=db[kind].find(a=>a.id===id);if(!x)return;
+ if(kind==='visits'){
+  showTab('visits',document.querySelectorAll('nav button')[1]);
+  const map={visitDate:'date',engineer:'engineer',customer:'customer',company:'company',contact:'contact',email:'email',city:'city',state:'state',industry:'industry',purpose:'purpose',presentation:'presentation',interest:'interest',nextVisitFollow:'nextVisitFollow',hasEnquiry:'hasEnquiry',remarks:'remarks'};
+  Object.entries(map).forEach(([a,b])=>set(a,x[b]));
+  Array.from($('products').options).forEach(o=>o.selected=(x.products||[]).includes(o.value));set('visitEdit',id);
+ }
+ if(kind==='enquiries'){
+  showTab('enquiries',document.querySelectorAll('nav button')[2]);
+  const map={enqDate:'enqDate',enqCustomer:'customer',enqContact:'contact',enqEmail:'email',emailReference:'reference',quoteNo:'quoteNo',quoteDate:'quoteDate',quoteValue:'quoteValue'};
+  Object.entries(map).forEach(([a,b])=>set(a,x[b]));
+  set('enqFollowDate',x.followDate);set('enquiryEdit',id);
+ }
+ if(kind==='followups'){
+  showTab('followups',document.querySelectorAll('nav button')[3]);
+  const map={fDate:'followDate',fEnqDate:'enqDate',fCustomer:'customer',fContact:'contact',fEmail:'email',fReference:'reference',fQuote:'quoteNo',fQuoteDate:'quoteDate',fQuoteValue:'quoteValue',fStatus:'status',fResponse:'response',fNextAction:'nextAction',fReason:'reason'};
+  Object.entries(map).forEach(([a,b])=>set(a,x[b]));set('followEdit',id);
+ }
+ if(kind==='orders'){
+  showTab('orders',document.querySelectorAll('nav button')[4]);
+  const map={oCustomer:'customer',oCompany:'company',poDate:'poDate',poReceived:'poReceived',poValue:'poValue',oQuoteValue:'quoteValue',soNo:'soNo',deliveryDate:'deliveryDate',poDescription:'description'};
+  Object.entries(map).forEach(([a,b])=>set(a,x[b]));set('orderEdit',id);
+ }
+}
+function deleteRecord(kind,id){
+ if(!confirm('Delete this record?'))return;
+ if(kind==='visits'){
+  db.visits=db.visits.filter(x=>x.id!==id);
+  const ids=db.enquiries.filter(x=>x.visitId===id).map(x=>x.id);
+  db.enquiries=db.enquiries.filter(x=>x.visitId!==id);
+  db.followups=db.followups.filter(x=>!ids.includes(x.enquiryId));
+ }else if(kind==='enquiries'){
+  db.enquiries=db.enquiries.filter(x=>x.id!==id);
+  db.followups=db.followups.filter(x=>x.enquiryId!==id);
+ }else db[kind]=db[kind].filter(x=>x.id!==id);
+ saveDB();
+}
+function clearEdit(id){set(id,'');}
+function exportCSV(kind){
+ const headers={
+ visits:['Visit Date','Sales Engineer','Customer','Company','Contact','Email','City','State','Industry','Purpose','Presentation','Products','Interest','Next Follow-up Date','Enquiry Generation','Remarks'],
+ enquiries:['Enquiry Received Date','Customer Name','Customer Contact No','Customer E-mail ID','Email Reference','Quote No','Quote Submission Date','Quote Value','Follow-up Date'],
+ followups:['Follow-up Date','Enquiry Received Date','Customer','Contact','Email','Email Reference','Quote No','Quote Submission Date','Quote Value','Status','Response','Next Action Date','Reasoning'],
+ orders:['Customer','Company','PO Date','PO Received Date','PO Value','Quote Value','SO No','Delivery Date Schedule','PO Technical Description']
+ };
+ const fields={
+ visits:['date','engineer','customer','company','contact','email','city','state','industry','purpose','presentation','products','interest','nextVisitFollow','hasEnquiry','remarks'],
+ enquiries:['enqDate','customer','contact','email','reference','quoteNo','quoteDate','quoteValue','followDate'],
+ followups:['followDate','enqDate','customer','contact','email','reference','quoteNo','quoteDate','quoteValue','status','response','nextAction','reason'],
+ orders:['customer','company','poDate','poReceived','poValue','quoteValue','soNo','deliveryDate','description']
+ };
+ const quote=v=>'"'+String(Array.isArray(v)?v.join('; '):(v??'')).replace(/"/g,'""')+'"';
+ const csv=[headers[kind],...db[kind].map(r=>fields[kind].map(f=>r[f]))].map(row=>row.map(quote).join(',')).join('\r\n');
+ const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='SalesFlow_'+kind+'_Report.csv';a.click();URL.revokeObjectURL(a.href);
+}
+renderAll();
+</script>
+</body>
+</html>
