@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SalesFlow CRM Portal</title>
+  <style>
+    :root {
+      --navy: #142b4a;
+      --blue: #2563eb;
+      --bg: #f3f6fb;
+      --line: #dce3ed;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: #172033;
+    }
+    header {
+      background: var(--navy);
+      color: white;
+      padding: 22px 28px;
+    }
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 25px;
+    }
+    header p {
+      margin: 0;
+      color: #cbd5e1;
+    }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 14px 22px;
+      background: white;
+      border-bottom: 1px solid var(--line);
+    }
+    nav button, .btn {
+      border: 0;
+      border-radius: 7px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    nav button {
+      background: #eaf0f8;
+      color: #243b5a;
+    }
+    nav button.active, .primary {
+      background: var(--blue);
+      color: white;
+    }
+    main {
+      padding: 22px;
+      max-width: 1500px;
+      margin: auto;
+    }
+    .panel {
+      display: none;
+      background: white;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .panel.active {
+      display: block;
+    }
+    h2 {
+      margin-top: 0;
+      color: var(--navy);
+    }
+    h3 {
+      color: var(--navy);
+      margin-top: 24px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 13px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: white;
+      font: inherit;
+    }
+    textarea {
+      min-height: 75px;
+      resize: vertical;
+    }
+    .field {
+      margin-bottom: 10px;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+    .btn {
+      background: #e7edf5;
+      color: #243b5a;
+    }
+    .danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .tablewrap {
+      overflow: auto;
+      margin-top: 18px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 900px;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 9px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #edf3fa;
+      color: #183452;
+    }
+    .small {
+      font-size: 12px;
+      color: #64748b;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      padding: 18px;
+      background: #f1f6ff;
+      border-radius: 9px;
+    }
+    .stat strong {
+      display: block;
+      font-size: 25px;
+      color: var(--blue);
+      margin-top: 7px;
+    }
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      margin-bottom: 18px;
+    }
+    .filter-bar .field {
+      margin-bottom: 0;
+      min-width: 240px;
+    }
+    .section-divider {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid var(--line);
+    }
+    footer {
+      text-align: center;
+      color: #64748b;
+      padding: 20px;
+    }
+    @media (max-width: 600px) {
+      main { padding: 12px; }
+      .panel { padding: 14px; }
+      header { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>SalesFlow CRM</h1>
+  <p>Sales Visit • Enquiry Tracking • Follow-up Management • Order Booking</p>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('dashboard', this)">Dashboard</button>
+  <button onclick="showTab('visits', this)">Sales Visit Entry</button>
+  <button onclick="showTab('enquiries', this)">Enquiry Tracking</button>
+  <button onclick="showTab('followups', this)">Follow-up Management</button>
+  <button onclick="showTab('orders', this)">Order Booking</button>
+</nav>
+
+<main>
+  <!-- DASHBOARD PANEL -->
+  <section id="dashboard" class="panel active">
+    <h2>Dashboard & Sales Engineer Extract</h2>
+    
+    <div class="filter-bar">
+      <div class="field">
+        <label for="dashEngineerFilter">Filter by Sales Engineer</label>
+        <select id="dashEngineerFilter" onchange="renderAll()">
+          <option value="ALL">All Sales Engineers</option>
+          <option value="Uttam">Uttam</option>
+        </select>
+      </div>
+      <div class="actions" style="margin-top: 0;">
+        <button type="button" class="btn primary" onclick="exportDashboardExtract()">Export Filtered Engineer Extract – Excel</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">Total Sales Visits<strong id="visitCount">0</strong></div>
+      <div class="stat">Total Enquiries<strong id="enquiryCount">0</strong></div>
+      <div class="stat">Follow-ups<strong id="followCount">0</strong></div>
+      <div class="stat">Orders Booked<strong id="orderCount">0</strong></div>
+    </div>
+    <p class="small" style="margin-top:12px;">Records are saved automatically in this browser. Selecting a Sales Engineer filters the dashboard counts and all module extracts below.</p>
+
+    <div class="section-divider">
+      <h3>1. Sales Visits Extract (<span id="dashEngLabel1">All Sales Engineers</span>)</h3>
+      <div class="tablewrap"><table id="dashVisitTable"></table></div>
+
+      <h3>2. Enquiry Tracking Extract (<span id="dashEngLabel2">All Sales Engineers</span>)</h3>
+      <div class="tablewrap"><table id="dashEnquiryTable"></table></div>
+
+      <h3>3. Follow-up Management Extract (<span id="dashEngLabel3">All Sales Engineers</span>)</h3>
+      <div class="tablewrap"><table id="dashFollowTable"></table></div>
+
+      <h3>4. Order Booking Extract (<span id="dashEngLabel4">All Sales Engineers</span>)</h3>
+      <div class="tablewrap"><table id="dashOrderTable"></table></div>
+    </div>
+  </section>
+
+  <!-- MODULE 1: SALES VISIT ENTRY -->
+  <section id="visits" class="panel">
+    <h2>Module 1 – Sales Visit Entry</h2>
+    <form id="visitForm">
+      <input type="hidden" id="visitEdit" />
+      <h3>Customer Details</h3>
+      <div class="grid">
+        <div class="field">
+          <label for="visitDate">Visit Date *</label>
+          <input type="date" id="visitDate" required />
+        </div>
+        <div class="field">
+          <label for="engineer">Sales Engineer Name *</label>
+          <input type="text" id="engineer" list="engineerList" value="Uttam" required />
+          <datalist id="engineerList">
+            <option value="Uttam"></option>
+          </datalist>
+        </div>
+        <!-- Swapped: Company Name moved to Customer Name's position -->
+        <div class="field">
+          <label for="company">Company Name *</label>
+          <input type="text" id="company" required />
+        </div>
+        <!-- Swapped: Customer Name moved to Company Name's position -->
+        <div class="field">
+          <label for="customer">Customer Name *</label>
+          <input type="text" id="customer" required />
+        </div>
+        <div class="field">
+          <label for="contact">Contact Number</label>
+          <input type="text" id="contact" />
+        </div>
+        <div class="field">
+          <label for="email">Email ID</label>
+          <input type="email" id="email" />
+        </div>
+        <div class="field">
+          <label for="city">Location / City</label>
+          <input type="text" id="city" />
+        </div>
+        <div class="field">
+          <label for="state">State</label>
+          <input type="text" id="state" />
+        </div>
+        <div class="field">
+          <label for="industry">Industry Type</label>
+          <input type="text" id="industry" />
+        </div>
+      </div>
+
+      <h3>Meeting Details</h3>
+      <div class="grid">
+        <div class="field">
+          <label for="purpose">Visit Purpose</label>
+          <select id="purpose">
+            <option>General Introduction</option>
+            <option>Product Presentation</option>
+            <option>Enquiry Discussion</option>
+            <option>Follow-up Visit</option>
+            <option>Complaint Support</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="presentation">Presentation Conducted</label>
+          <select id="presentation">
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="products">Products Discussed</label>
+          <select id="products" multiple size="4">
+            <option>CEMS</option>
+            <option>AAQMS</option>
+            <option>Dust Monitor</option>
+            <option>Opacity Monitor</option>
+            <option>WQMS</option>
+            <option>Gas Detection System</option>
+          </select>
+          <span class="small">Use Ctrl or Command to select multiple products.</span>
+        </div>
+        <div class="field">
+          <label for="interest">Customer Interest Level</label>
+          <select id="interest">
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="nextVisitFollow">Next Follow-up Date</label>
+          <input type="date" id="nextVisitFollow" />
+        </div>
+        <div class="field">
+          <label for="hasEnquiry">Enquiry Generation</label>
+          <select id="hasEnquiry">
+            <option>No</option>
+            <option>Yes</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="enquirySource">Enquiry Source</label>
+          <select id="enquirySource">
+            <option value="">-- Select Source --</option>
+            <option>Self Generated</option>
+            <option>Digital Enquiry</option>
+            <option>Sales Website</option>
+            <option>Email Enquiry</option>
+            <option>Expo Enquiry</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="remarks">Meeting Remarks</label>
+        <textarea id="remarks"></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Save Sales Visit</button>
+        <button type="reset" class="btn" onclick="clearEdit('visitEdit')">Clear Form</button>
+        <button type="button" class="btn" onclick="exportCSV('visits')">Export Sales Visits – Excel</button>
+      </div>
+    </form>
+
+    <div class="tablewrap"><table id="visitTable"></table></div>
+  </section>
+
+  <!-- MODULE 2: ENQUIRY TRACKING -->
+  <section id="enquiries" class="panel">
+    <h2>Module 2 – Enquiry Tracking</h2>
+    <p class="small">Enquiries are automatically created from Sales Visit Entry when Enquiry Generation is Yes. You can edit quotation details below.</p>
+    <form id="enquiryForm">
+      <input type="hidden" id="enquiryEdit" />
+      <div class="grid">
+        <div class="field">
+          <label for="enqDate">Enquiry Received Date</label>
+          <input type="date" id="enqDate" />
+        </div>
+        <div class="field">
+          <label for="enqEngineer">Sales Engineer</label>
+          <input type="text" id="enqEngineer" />
+        </div>
+        <!-- Swapped: Company Name moved to Customer Name's position -->
+        <div class="field">
+          <label for="enqCompany">Company Name</label>
+          <input type="text" id="enqCompany" />
+        </div>
+        <!-- Swapped: Customer Name moved to Company Name's position -->
+        <div class="field">
+          <label for="enqCustomer">Customer Name</label>
+          <input type="text" id="enqCustomer" />
+        </div>
+        <div class="field">
+          <label for="enqSource">Enquiry Source</label>
+          <select id="enqSource">
+            <option value="">-- Select Source --</option>
+            <option>Self Generated</option>
+            <option>Digital Enquiry</option>
+            <option>Sales Website</option>
+            <option>Email Enquiry</option>
+            <option>Expo Enquiry</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="enqContact">Customer Contact No.</label>
+          <input type="text" id="enqContact" />
+        </div>
+        <div class="field">
+          <label for="enqEmail">Customer E-mail ID</label>
+          <input type="email" id="enqEmail" />
+        </div>
+        <div class="field">
+          <label for="emailReference">Email Reference</label>
+          <input type="text" id="emailReference" />
+        </div>
+        <div class="field">
+          <label for="quoteNo">Quote No.</label>
+          <input type="text" id="quoteNo" />
+        </div>
+        <div class="field">
+          <label for="quoteDate">Quote Submission Date</label>
+          <input type="date" id="quoteDate" />
+        </div>
+        <div class="field">
+          <label for="quoteValue">Quote Value</label>
+          <input type="text" id="quoteValue" />
+        </div>
+        <div class="field">
+          <label for="enqFollowDate">Follow-up Date (auto-calculated)</label>
+          <input type="date" id="enqFollowDate" readonly />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Save / Update Enquiry</button>
+        <button type="reset" class="btn" onclick="clearEdit('enquiryEdit')">Clear Form</button>
+        <button type="button" class="btn" onclick="exportCSV('enquiries')">Export Enquiries – Excel</button>
+      </div>
+    </form>
+
+    <div class="tablewrap"><table id="enquiryTable"></table></div>
+  </section>
+
+  <!-- MODULE 3: FOLLOW-UP MANAGEMENT -->
+  <section id="followups" class="panel">
+    <h2>Module 3 – Follow-up Management</h2>
+    <p class="small">Customer and quotation details are synchronized from Enquiry Tracking. Follow-up date is two working days after quote submission.</p>
+    <form id="followForm">
+      <input type="hidden" id="followEdit" />
+      <div class="grid">
+        <div class="field">
+          <label for="fDate">Follow-up Date</label>
+          <input type="date" id="fDate" readonly />
+        </div>
+        <div class="field">
+          <label for="fEnqDate">Enquiry Received Date</label>
+          <input type="date" id="fEnqDate" readonly />
+        </div>
+        <div class="field">
+          <label for="fEngineer">Sales Engineer</label>
+          <input type="text" id="fEngineer" readonly />
+        </div>
+        <!-- Swapped: Company Name before Customer Name -->
+        <div class="field">
+          <label for="fCompany">Company Name</label>
+          <input type="text" id="fCompany" readonly />
+        </div>
+        <div class="field">
+          <label for="fCustomer">Customer Name</label>
+          <input type="text" id="fCustomer" readonly />
+        </div>
+        <div class="field">
+          <label for="fContact">Customer Contact No.</label>
+          <input type="text" id="fContact" readonly />
+        </div>
+        <div class="field">
+          <label for="fEmail">Customer E-mail ID</label>
+          <input type="email" id="fEmail" readonly />
+        </div>
+        <div class="field">
+          <label for="fReference">Email Reference</label>
+          <input type="text" id="fReference" readonly />
+        </div>
+        <div class="field">
+          <label for="fQuote">Quote No.</label>
+          <input type="text" id="fQuote" readonly />
+        </div>
+        <div class="field">
+          <label for="fQuoteDate">Quote Submission Date</label>
+          <input type="date" id="fQuoteDate" readonly />
+        </div>
+        <div class="field">
+          <label for="fQuoteValue">Quote Value</label>
+          <input type="text" id="fQuoteValue" readonly />
+        </div>
+        <div class="field">
+          <label for="fStatus">Follow-up Status</label>
+          <select id="fStatus">
+            <option>Pending</option>
+            <option>Completed</option>
+            <option>Rescheduled</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fResponse">Response / Outcome</label>
+          <input type="text" id="fResponse" />
+        </div>
+        <div class="field">
+          <label for="fNextAction">Next Action Date</label>
+          <input type="date" id="fNextAction" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="fReason">Reasoning</label>
+        <textarea id="fReason"></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Save Follow-up Update</button>
+        <button type="button" class="btn" onclick="exportCSV('followups')">Export Follow-ups – Excel</button>
+      </div>
+    </form>
+
+    <div class="tablewrap"><table id="followTable"></table></div>
+  </section>
+
+  <!-- MODULE 4: ORDER BOOKING -->
+  <section id="orders" class="panel">
+    <h2>Module 4 – Order Booking</h2>
+    <form id="orderForm">
+      <input type="hidden" id="orderEdit" />
+      <div class="grid">
+        <div class="field">
+          <label for="oEngineer">Sales Engineer Name</label>
+          <input type="text" id="oEngineer" list="engineerList" value="Uttam" />
+        </div>
+        <!-- Swapped: Company Name moved to Customer Name's position -->
+        <div class="field">
+          <label for="oCompany">Company Name *</label>
+          <input type="text" id="oCompany" required />
+        </div>
+        <!-- Swapped: Customer Name moved to Company Name's position -->
+        <div class="field">
+          <label for="oCustomer">Customer Name *</label>
+          <input type="text" id="oCustomer" required />
+        </div>
+        <div class="field">
+          <label for="poDate">PO Date</label>
+          <input type="date" id="poDate" />
+        </div>
+        <div class="field">
+          <label for="poReceived">PO Received Date</label>
+          <input type="date" id="poReceived" />
+        </div>
+        <div class="field">
+          <label for="poValue">PO Value</label>
+          <input type="text" id="poValue" />
+        </div>
+        <div class="field">
+          <label for="oQuoteValue">Quote Value</label>
+          <input type="text" id="oQuoteValue" />
+        </div>
+        <div class="field">
+          <label for="soNo">SO No.</label>
+          <input type="text" id="soNo" />
+        </div>
+        <div class="field">
+          <label for="deliveryDate">Delivery Date Schedule</label>
+          <input type="date" id="deliveryDate" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="poDescription">PO Description – Technical</label>
+        <textarea id="poDescription"></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Save Order</button>
+        <button type="reset" class="btn" onclick="clearEdit('orderEdit')">Clear Form</button>
+        <button type="button" class="btn" onclick="exportCSV('orders')">Export Orders – Excel</button>
+      </div>
+    </form>
+
+    <div class="tablewrap"><table id="orderTable"></table></div>
+  </section>
+</main>
+
+<footer>
+  SalesFlow CRM • Standalone editable portal
+</footer>
+
+<script>
+const KEY = 'salesflowCRM_v3';
+let db = JSON.parse(localStorage.getItem(KEY) || '{"visits":[],"enquiries":[],"followups":[],"orders":[]}');
+
+const $ = id => document.getElementById(id);
+const val = id => $(id).value;
+const set = (id, v) => $(id).value = v ?? '';
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+function saveDB() {
+  localStorage.setItem(KEY, JSON.stringify(db));
+  renderAll();
+}
+
+function showTab(id, button) {
+  document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+  $(id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(x => x.classList.remove('active'));
+  button.classList.add('active');
+}
+
+function addBusinessDays(date, days) {
+  if (!date) return '';
+  let d = new Date(date + 'T12:00:00');
+  let count = 0;
+  while (count < days) {
+    d.setDate(d.getDate() + 1);
+    const day = d.getDay();
+    if (day !== 0 && day !== 6) count++;
+  }
+  return d.toISOString().slice(0, 10);
+}
+
+function syncFollowup(e) {
+  let f = db.followups.find(x => x.enquiryId === e.id);
+  const fields = {
+    enquiryId: e.id,
+    engineer: e.engineer || '',
+    followDate: e.followDate,
+    enqDate: e.enqDate,
+    company: e.company || '',
+    customer: e.customer,
+    contact: e.contact,
+    email: e.email,
+    reference: e.reference,
+    quoteNo: e.quoteNo,
+    quoteDate: e.quoteDate,
+    quoteValue: e.quoteValue
+  };
+  if (!f) {
+    db.followups.push({
+      id: uid(),
+      ...fields,
+      status: 'Pending',
+      response: '',
+      nextAction: '',
+      reason: ''
+    });
+  } else {
+    Object.assign(f, fields);
+  }
+}
+
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c]));
+}
+
+function buildTable(id, headers, rows, kind, showActions = true) {
+  let t = $(id);
+  const actionHeader = showActions ? '<th>Actions</th>' : '';
+  t.innerHTML = '<thead><tr>' + headers.map(h => '<th>' + h + '</th>').join('') + actionHeader + '</tr></thead><tbody>' +
+    (rows.length === 0
+      ? `<tr><td colspan="${headers.length + (showActions ? 1 : 0)}" class="small">No records found.</td></tr>`
+      : rows.map(r => '<tr>' + r.cells.map(c => '<td>' + esc(c) + '</td>').join('') +
+        (showActions
+          ? `<td><button type="button" class="btn" style="padding:5px 9px;font-size:12px;" onclick="editRecord('${kind}','${r.id}')">Edit</button> ` +
+            `<button type="button" class="btn danger" style="padding:5px 9px;font-size:12px;" onclick="deleteRecord('${kind}','${r.id}')">Delete</button></td>`
+          : '') +
+        '</tr>').join('')) +
+    '</tbody>';
+}
+
+function refreshEngineerOptions() {
+  const select = $('dashEngineerFilter');
+  const datalist = $('engineerList');
+  const currentVal = select.value;
+
+  const engineers = new Set(['Uttam']);
+  db.visits.forEach(x => { if (x.engineer && x.engineer.trim()) engineers.add(x.engineer.trim()); });
+  db.enquiries.forEach(x => { if (x.engineer && x.engineer.trim()) engineers.add(x.engineer.trim()); });
+  db.followups.forEach(x => { if (x.engineer && x.engineer.trim()) engineers.add(x.engineer.trim()); });
+  db.orders.forEach(x => { if (x.engineer && x.engineer.trim()) engineers.add(x.engineer.trim()); });
+
+  const sorted = Array.from(engineers).sort();
+  select.innerHTML = '<option value="ALL">All Sales Engineers</option>' +
+    sorted.map(name => `<option value="${esc(name)}">${esc(name)}</option>`).join('');
+
+  if (sorted.includes(currentVal) || currentVal === 'ALL') {
+    select.value = currentVal;
+  }
+
+  datalist.innerHTML = sorted.map(name => `<option value="${esc(name)}"></option>`).join('');
+}
+
+function getFilteredData() {
+  const selectedEng = $('dashEngineerFilter').value;
+  if (selectedEng === 'ALL') {
+    return {
+      visits: db.visits,
+      enquiries: db.enquiries,
+      followups: db.followups,
+      orders: db.orders
+    };
+  }
+  const match = name => (name || '').trim().toLowerCase() === selectedEng.toLowerCase();
+  return {
+    visits: db.visits.filter(x => match(x.engineer)),
+    enquiries: db.enquiries.filter(x => match(x.engineer)),
+    followups: db.followups.filter(x => match(x.engineer)),
+    orders: db.orders.filter(x => match(x.engineer))
+  };
+}
+
+function renderAll() {
+  refreshEngineerOptions();
+
+  const selectedEng = $('dashEngineerFilter').value;
+  const engLabel = selectedEng === 'ALL' ? 'All Sales Engineers' : selectedEng;
+  ['dashEngLabel1', 'dashEngLabel2', 'dashEngLabel3', 'dashEngLabel4'].forEach(id => $(id).textContent = engLabel);
+
+  const filtered = getFilteredData();
+
+  $('visitCount').textContent = filtered.visits.length;
+  $('enquiryCount').textContent = filtered.enquiries.length;
+  $('followCount').textContent = filtered.followups.length;
+  $('orderCount').textContent = filtered.orders.length;
+
+  // Headers with Company Name swapped before Customer Name, and Enquiry Source included
+  const visitHeaders = ['Visit Date', 'Engineer', 'Company Name', 'Customer Name', 'Contact', 'Email', 'City', 'State', 'Industry', 'Purpose', 'Presentation', 'Products', 'Interest', 'Next Visit Follow-up', 'Enquiry Generation', 'Enquiry Source', 'Remarks'];
+  const mapVisitRow = x => ({
+    id: x.id,
+    cells: [x.date, x.engineer, x.company, x.customer, x.contact, x.email, x.city, x.state, x.industry, x.purpose, x.presentation, (x.products || []).join(', '), x.interest, x.nextVisitFollow, x.hasEnquiry, x.enquirySource, x.remarks]
+  });
+
+  const enquiryHeaders = ['Enquiry Received Date', 'Sales Engineer', 'Company Name', 'Customer Name', 'Enquiry Source', 'Customer Contact No.', 'Customer E-mail ID', 'Email Reference', 'Quote No.', 'Quote Submission Date', 'Quote Value', 'Follow-up Date'];
+  const mapEnquiryRow = x => ({
+    id: x.id,
+    cells: [x.enqDate, x.engineer, x.company, x.customer, x.enquirySource, x.contact, x.email, x.reference, x.quoteNo, x.quoteDate, x.quoteValue, x.followDate]
+  });
+
+  const followHeaders = ['Follow-up Date', 'Enquiry Received Date', 'Sales Engineer', 'Company Name', 'Customer Name', 'Contact', 'Email', 'Email Reference', 'Quote No.', 'Quote Submission Date', 'Quote Value', 'Status', 'Response', 'Next Action Date', 'Reasoning'];
+  const mapFollowRow = x => ({
+    id: x.id,
+    cells: [x.followDate, x.enqDate, x.engineer, x.company, x.customer, x.contact, x.email, x.reference, x.quoteNo, x.quoteDate, x.quoteValue, x.status, x.response, x.nextAction, x.reason]
+  });
+
+  const orderHeaders = ['Sales Engineer', 'Company Name', 'Customer Name', 'PO Date', 'PO Received Date', 'PO Value', 'Quote Value', 'SO No.', 'Delivery Date Schedule', 'PO Technical Description'];
+  const mapOrderRow = x => ({
+    id: x.id,
+    cells: [x.engineer, x.company, x.customer, x.poDate, x.poReceived, x.poValue, x.quoteValue, x.soNo, x.deliveryDate, x.description]
+  });
+
+  // Render Dashboard Filtered Extract Tables
+  buildTable('dashVisitTable', visitHeaders, filtered.visits.map(mapVisitRow), 'visits', false);
+  buildTable('dashEnquiryTable', enquiryHeaders, filtered.enquiries.map(mapEnquiryRow), 'enquiries', false);
+  buildTable('dashFollowTable', followHeaders, filtered.followups.map(mapFollowRow), 'followups', false);
+  buildTable('dashOrderTable', orderHeaders, filtered.orders.map(mapOrderRow), 'orders', false);
+
+  // Render Full Module Tables
+  buildTable('visitTable', visitHeaders, db.visits.map(mapVisitRow), 'visits', true);
+  buildTable('enquiryTable', enquiryHeaders, db.enquiries.map(mapEnquiryRow), 'enquiries', true);
+  buildTable('followTable', followHeaders, db.followups.map(mapFollowRow), 'followups', true);
+  buildTable('orderTable', orderHeaders, db.orders.map(mapOrderRow), 'orders', true);
+}
+
+$('visitForm').addEventListener('submit', e => {
+  e.preventDefault();
+  let id = val('visitEdit') || uid();
+  let old = db.visits.find(x => x.id === id);
+  let record = {
+    id,
+    date: val('visitDate'),
+    engineer: val('engineer'),
+    company: val('company'),
+    customer: val('customer'),
+    contact: val('contact'),
+    email: val('email'),
+    city: val('city'),
+    state: val('state'),
+    industry: val('industry'),
+    purpose: val('purpose'),
+    presentation: val('presentation'),
+    products: Array.from($('products').selectedOptions).map(o => o.value),
+    interest: val('interest'),
+    nextVisitFollow: val('nextVisitFollow'),
+    hasEnquiry: val('hasEnquiry'),
+    enquirySource: val('enquirySource'),
+    remarks: val('remarks')
+  };
+  if (old) Object.assign(old, record);
+  else db.visits.push(record);
+
+  if (record.hasEnquiry === 'Yes') {
+    let enq = db.enquiries.find(x => x.visitId === id);
+    if (!enq) {
+      enq = {
+        id: uid(),
+        visitId: id,
+        enqDate: record.date,
+        engineer: record.engineer,
+        company: record.company,
+        customer: record.customer,
+        enquirySource: record.enquirySource,
+        contact: record.contact,
+        email: record.email,
+        reference: '',
+        quoteNo: '',
+        quoteDate: '',
+        quoteValue: '',
+        followDate: ''
+      };
+      db.enquiries.push(enq);
+    } else {
+      Object.assign(enq, {
+        enqDate: record.date,
+        engineer: record.engineer,
+        company: record.company,
+        customer: record.customer,
+        enquirySource: record.enquirySource,
+        contact: record.contact,
+        email: record.email
+      });
+    }
+    syncFollowup(enq);
+  } else {
+    db.enquiries = db.enquiries.filter(x => x.visitId !== id);
+    db.followups = db.followups.filter(x => db.enquiries.some(en => en.id === x.enquiryId));
+  }
+
+  saveDB();
+  e.target.reset();
+  set('engineer', 'Uttam');
+  set('visitEdit', '');
+  alert('Sales visit saved.');
+});
+
+$('enquiryForm').addEventListener('submit', e => {
+  e.preventDefault();
+  let id = val('enquiryEdit');
+  let x = db.enquiries.find(a => a.id === id);
+  if (!x) {
+    alert('Please select Edit on an existing enquiry record to update it.');
+    return;
+  }
+  Object.assign(x, {
+    enqDate: val('enqDate'),
+    engineer: val('enqEngineer'),
+    company: val('enqCompany'),
+    customer: val('enqCustomer'),
+    enquirySource: val('enqSource'),
+    contact: val('enqContact'),
+    email: val('enqEmail'),
+    reference: val('emailReference'),
+    quoteNo: val('quoteNo'),
+    quoteDate: val('quoteDate'),
+    quoteValue: val('quoteValue'),
+    followDate: addBusinessDays(val('quoteDate'), 2)
+  });
+  syncFollowup(x);
+  saveDB();
+  e.target.reset();
+  set('enquiryEdit', '');
+  alert('Enquiry and follow-up details updated.');
+});
+
+$('followForm').addEventListener('submit', e => {
+  e.preventDefault();
+  let x = db.followups.find(a => a.id === val('followEdit'));
+  if (!x) {
+    alert('Select Edit on a follow-up record to update it.');
+    return;
+  }
+  Object.assign(x, {
+    status: val('fStatus'),
+    response: val('fResponse'),
+    nextAction: val('fNextAction'),
+    reason: val('fReason')
+  });
+  saveDB();
+  e.target.reset();
+  set('followEdit', '');
+  alert('Follow-up update saved.');
+});
+
+$('orderForm').addEventListener('submit', e => {
+  e.preventDefault();
+  let id = val('orderEdit'), x = db.orders.find(a => a.id === id);
+  let record = {
+    id: id || uid(),
+    engineer: val('oEngineer'),
+    company: val('oCompany'),
+    customer: val('oCustomer'),
+    poDate: val('poDate'),
+    poReceived: val('poReceived'),
+    poValue: val('poValue'),
+    quoteValue: val('oQuoteValue'),
+    soNo: val('soNo'),
+    deliveryDate: val('deliveryDate'),
+    description: val('poDescription')
+  };
+  if (x) Object.assign(x, record);
+  else db.orders.push(record);
+  saveDB();
+  e.target.reset();
+  set('oEngineer', 'Uttam');
+  set('orderEdit', '');
+  alert('Order saved.');
+});
+
+function editRecord(kind, id) {
+  let x = db[kind].find(a => a.id === id);
+  if (!x) return;
+
+  if (kind === 'visits') {
+    showTab('visits', document.querySelectorAll('nav button')[1]);
+    const map = {
+      visitDate: 'date',
+      engineer: 'engineer',
+      company: 'company',
+      customer: 'customer',
+      contact: 'contact',
+      email: 'email',
+      city: 'city',
+      state: 'state',
+      industry: 'industry',
+      purpose: 'purpose',
+      presentation: 'presentation',
+      interest: 'interest',
+      nextVisitFollow: 'nextVisitFollow',
+      hasEnquiry: 'hasEnquiry',
+      enquirySource: 'enquirySource',
+      remarks: 'remarks'
+    };
+    Object.entries(map).forEach(([a, b]) => set(a, x[b]));
+    Array.from($('products').options).forEach(o => o.selected = (x.products || []).includes(o.value));
+    set('visitEdit', id);
+  }
+
+  if (kind === 'enquiries') {
+    showTab('enquiries', document.querySelectorAll('nav button')[2]);
+    const map = {
+      enqDate: 'enqDate',
+      enqEngineer: 'engineer',
+      enqCompany: 'company',
+      enqCustomer: 'customer',
+      enqSource: 'enquirySource',
+      enqContact: 'contact',
+      enqEmail: 'email',
+      emailReference: 'reference',
+      quoteNo: 'quoteNo',
+      quoteDate: 'quoteDate',
+      quoteValue: 'quoteValue'
+    };
+    Object.entries(map).forEach(([a, b]) => set(a, x[b]));
+    set('enqFollowDate', x.followDate);
+    set('enquiryEdit', id);
+  }
+
+  if (kind === 'followups') {
+    showTab('followups', document.querySelectorAll('nav button')[3]);
+    const map = {
+      fDate: 'followDate',
+      fEnqDate: 'enqDate',
+      fEngineer: 'engineer',
+      fCompany: 'company',
+      fCustomer: 'customer',
+      fContact: 'contact',
+      fEmail: 'email',
+      fReference: 'reference',
+      fQuote: 'quoteNo',
+      fQuoteDate: 'quoteDate',
+      fQuoteValue: 'quoteValue',
+      fStatus: 'status',
+      fResponse: 'response',
+      fNextAction: 'nextAction',
+      fReason: 'reason'
+    };
+    Object.entries(map).forEach(([a, b]) => set(a, x[b]));
+    set('followEdit', id);
+  }
+
+  if (kind === 'orders') {
+    showTab('orders', document.querySelectorAll('nav button')[4]);
+    const map = {
+      oEngineer: 'engineer',
+      oCompany: 'company',
+      oCustomer: 'customer',
+      poDate: 'poDate',
+      poReceived: 'poReceived',
+      poValue: 'poValue',
+      oQuoteValue: 'quoteValue',
+      soNo: 'soNo',
+      deliveryDate: 'deliveryDate',
+      poDescription: 'description'
+    };
+    Object.entries(map).forEach(([a, b]) => set(a, x[b]));
+    set('orderEdit', id);
+  }
+}
+
+function deleteRecord(kind, id) {
+  if (!confirm('Delete this record?')) return;
+  if (kind === 'visits') {
+    db.visits = db.visits.filter(x => x.id !== id);
+    const ids = db.enquiries.filter(x => x.visitId === id).map(x => x.id);
+    db.enquiries = db.enquiries.filter(x => x.visitId !== id);
+    db.followups = db.followups.filter(x => !ids.includes(x.enquiryId));
+  } else if (kind === 'enquiries') {
+    db.enquiries = db.enquiries.filter(x => x.id !== id);
+    db.followups = db.followups.filter(x => x.enquiryId !== id);
+  } else {
+    db[kind] = db[kind].filter(x => x.id !== id);
+  }
+  saveDB();
+}
+
+function clearEdit(id) {
+  set(id, '');
+}
+
+const HEADERS_MAP = {
+  visits: ['Visit Date', 'Sales Engineer', 'Company Name', 'Customer Name', 'Contact', 'Email', 'City', 'State', 'Industry', 'Purpose', 'Presentation', 'Products', 'Interest', 'Next Follow-up Date', 'Enquiry Generation', 'Enquiry Source', 'Remarks'],
+  enquiries: ['Enquiry Received Date', 'Sales Engineer', 'Company Name', 'Customer Name', 'Enquiry Source', 'Customer Contact No', 'Customer E-mail ID', 'Email Reference', 'Quote No', 'Quote Submission Date', 'Quote Value', 'Follow-up Date'],
+  followups: ['Follow-up Date', 'Enquiry Received Date', 'Sales Engineer', 'Company Name', 'Customer Name', 'Contact', 'Email', 'Email Reference', 'Quote No', 'Quote Submission Date', 'Quote Value', 'Status', 'Response', 'Next Action Date', 'Reasoning'],
+  orders: ['Sales Engineer', 'Company Name', 'Customer Name', 'PO Date', 'PO Received Date', 'PO Value', 'Quote Value', 'SO No', 'Delivery Date Schedule', 'PO Technical Description']
+};
+
+const FIELDS_MAP = {
+  visits: ['date', 'engineer', 'company', 'customer', 'contact', 'email', 'city', 'state', 'industry', 'purpose', 'presentation', 'products', 'interest', 'nextVisitFollow', 'hasEnquiry', 'enquirySource', 'remarks'],
+  enquiries: ['enqDate', 'engineer', 'company', 'customer', 'enquirySource', 'contact', 'email', 'reference', 'quoteNo', 'quoteDate', 'quoteValue', 'followDate'],
+  followups: ['followDate', 'enqDate', 'engineer', 'company', 'customer', 'contact', 'email', 'reference', 'quoteNo', 'quoteDate', 'quoteValue', 'status', 'response', 'nextAction', 'reason'],
+  orders: ['engineer', 'company', 'customer', 'poDate', 'poReceived', 'poValue', 'quoteValue', 'soNo', 'deliveryDate', 'description']
+};
+
+function quoteCSV(v) {
+  return '"' + String(Array.isArray(v) ? v.join('; ') : (v ?? '')).replace(/"/g, '""') + '"';
+}
+
+function exportCSV(kind) {
+  const csv = [HEADERS_MAP[kind], ...db[kind].map(r => FIELDS_MAP[kind].map(f => r[f]))]
+    .map(row => row.map(quoteCSV).join(','))
+    .join('\r\n');
+  downloadCSV(csv, 'SalesFlow_' + kind + '_Report.csv');
+}
+
+function exportDashboardExtract() {
+  const selectedEng = $('dashEngineerFilter').value;
+  const filtered = getFilteredData();
+  const lines = [];
+
+  lines.push(quoteCSV('SalesFlow CRM - Engineer Extract Report: ' + (selectedEng === 'ALL' ? 'All Sales Engineers' : selectedEng)));
+  lines.push('');
+  lines.push([quoteCSV('Total Sales Visits'), quoteCSV('Total Enquiries'), quoteCSV('Follow-ups'), quoteCSV('Orders Booked')].join(','));
+  lines.push([quoteCSV(filtered.visits.length), quoteCSV(filtered.enquiries.length), quoteCSV(filtered.followups.length), quoteCSV(filtered.orders.length)].join(','));
+  lines.push('');
+
+  const sections = [
+    { title: '1. SALES VISITS', kind: 'visits', data: filtered.visits },
+    { title: '2. ENQUIRY TRACKING', kind: 'enquiries', data: filtered.enquiries },
+    { title: '3. FOLLOW-UP MANAGEMENT', kind: 'followups', data: filtered.followups },
+    { title: '4. ORDER BOOKING', kind: 'orders', data: filtered.orders }
+  ];
+
+  sections.forEach(sec => {
+    lines.push(quoteCSV(sec.title));
+    lines.push(HEADERS_MAP[sec.kind].map(quoteCSV).join(','));
+    sec.data.forEach(r => {
+      lines.push(FIELDS_MAP[sec.kind].map(f => quoteCSV(r[f])).join(','));
+    });
+    lines.push('');
+  });
+
+  const fileName = 'SalesFlow_Extract_' + (selectedEng === 'ALL' ? 'All_Engineers' : selectedEng.replace(/\s+/g, '_')) + '.csv';
+  downloadCSV(lines.join('\r\n'), fileName);
+}
+
+function downloadCSV(csvContent, filename) {
+  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+renderAll();
+</script>
+</body>
+</html>
